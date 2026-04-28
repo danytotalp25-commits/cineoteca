@@ -44,4 +44,14 @@
     "video": "https://archive.org/embed/BirthOfANation1915",
     "duracion": 195
   }
+,{
+  "titulo": "Resurrection",
+  "anio": 2025,
+  "genero": "Ciencia ficción",
+  "descripcion": "En un mundo donde la humanidad renunció a soñar a cambio de la inmortalidad.",
+  "poster": "https://s3.amazonaws.com/criterion-production/films/53abae5df24d61e8bd007d344936f046/BSslTYsDodE30Yw8j6ibWjOYE2cO0K_original.jpg",
+  "video": "https://ok.ru/video/12865929284255",
+  "duracion": 159
+}
+
 ]
