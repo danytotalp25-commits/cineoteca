@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cineoteca</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.18);
+    --text: #f0ece4;
+    --muted: #888;
+    --accent: #c9a84c;
+    --accent2: #8b3a3a;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  header {
+    padding: 2.5rem 3rem 2rem;
+    border-bottom: 0.5px solid var(--border);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .brand-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .brand-name em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .brand-sub {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    max-width: 400px;
+  }
+
+  .search-wrap {
+    flex: 1;
+    position: relative;
+  }
+
+  .search-wrap svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+  }
+
+  input[type="text"] {
+    width: 100%;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    padding: 10px 14px 10px 36px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="text"]:focus { border-color: var(--border-hover); }
+  input[type="text"]::placeholder { color: var(--muted); }
+
+  .count {
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* Filters */
+  .filters {
+    padding: 1.25rem 3rem;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  .pill {
+    padding: 5px 16px;
+    border-radius: 999px;
+    border: 0.5px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .pill:hover { border-color: var(--border-hover); color: var(--text); }
+  .pill.active { border-color: var(--accent); color: var(--accent); background: rgba(201,168,76,0.08); }
+
+  /* Grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem 3rem;
+  }
+
+  .card {
+    cursor: pointer;
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 0.5px solid var(--border);
+    background: var(--surface);
+    transition: border-color 0.25s, transform 0.25s;
+  }
+
+  .card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-4px);
+  }
+
+  .card:hover .card-overlay { opacity: 1; }
+
+  .poster-wrap {
+    position: relative;
+    aspect-ratio: 2/3;
+    overflow: hidden;
+    background: var(--surface2);
+  }
+
+  .poster-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s;
+  }
+
+  .card:hover .poster-wrap img { transform: scale(1.04); }
+
+  .poster-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: var(--muted);
+    background: var(--surface2);
+  }
+
+  .card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    display: flex;
+    align-items: flex-end;
+    padding: 12px;
+  }
+
+  .play-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card-body {
+    padding: 12px;
+  }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+
+  .card-meta {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  .card-genre {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 0.5px solid rgba(201,168,76,0.3);
+    border-radius: 999px;
+    padding: 2px 8px;
+  }
+
+  /* Empty state */
+  .empty {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 5rem;
+    color: var(--muted);
+  }
+
+  .empty p:first-child {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+    font-style: italic;
+  }
+
+  /* Modal */
+  .modal-bg {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    backdrop-filter: blur(6px);
+  }
+
+  .modal-bg.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 0.5px solid var(--border-hover);
+    border-radius: 14px;
+    width: 100%;
+    max-width: 720px;
+    overflow: hidden;
+    animation: rise 0.3s ease;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(20px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .modal-player {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #000;
+  }
+
+  .modal-player iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+
+  .no-video {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .modal-info {
+    padding: 1.5rem;
+    display: flex;
+    gap: 1.5rem;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 400;
+    margin-bottom: 6px;
+  }
+
+  .modal-sub {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+  }
+
+  .modal-desc {
+    font-size: 13px;
+    color: rgba(240,236,228,0.65);
+    line-height: 1.7;
+    max-width: 500px;
+  }
+
+  .close-btn {
+    background: transparent;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 6px 14px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .close-btn:hover { border-color: var(--border-hover); color: var(--text); }
+
+  /* Error banner */
+  .error-banner {
+    margin: 1rem 3rem;
+    padding: 12px 16px;
+    background: rgba(139,58,58,0.15);
+    border: 0.5px solid rgba(139,58,58,0.4);
+    border-radius: var(--radius);
+    font-size: 13px;
+    color: #e08080;
+    display: none;
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 1.5rem; }
+    .filters { padding: 1rem 1.5rem; }
+    .grid { padding: 1.5rem; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+    .modal-info { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-name">Cine<em>oteca</em></div>
+    <div class="brand-sub">Archivo de cine</div>
+  </div>
+  <div class="header-right">
+    <div class="search-wrap">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" id="search" placeholder="Buscar película..." oninput="render()">
+    </div>
+    <span class="count" id="count"></span>
+  </div>
+</header>
+
+<div class="filters" id="filters"></div>
+
+<div class="error-banner" id="error">
+  No se pudo cargar <code>peliculas.json</code>. Asegúrate de que el archivo esté en la misma carpeta que index.html.
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="modal-bg" id="modal" onclick="handleModalClick(event)">
+  <div class="modal" id="modal-box">
+    <div class="modal-player" id="player"></div>
+    <div class="modal-info">
+      <div>
+        <div class="modal-title" id="m-title"></div>
+        <div class="modal-sub" id="m-sub"></div>
+        <div class="modal-desc" id="m-desc"></div>
+      </div>
+      <button class="close-btn" onclick="closeModal()">✕ cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let PELICULAS = [];
+let generoActivo = 'Todos';
+
+async function init() {
+  try {
+    const res = await fetch('peliculas.json');
+    if (!res.ok) throw new Error('No se encontró el archivo');
+    PELICULAS = await res.json();
+  } catch (e) {
+    document.getElementById('error').style.display = 'block';
+    PELICULAS = [];
+  }
+  buildFilters();
+  render();
+}
+
+function buildFilters() {
+  const generos = ['Todos', ...new Set(PELICULAS.map(p => p.genero).filter(Boolean))].sort((a,b) => a === 'Todos' ? -1 : a.localeCompare(b));
+  document.getElementById('filters').innerHTML = generos.map(g =>
+    `<button class="pill ${g === generoActivo ? 'active' : ''}" onclick="setGenero('${g}')">${g}</button>`
+  ).join('');
+}
+
+function setGenero(g) {
+  generoActivo = g;
+  buildFilters();
+  render();
+}
+
+function render() {
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  const lista = PELICULAS.filter(p => {
+    const matchG = generoActivo === 'Todos' || p.genero === generoActivo;
+    const matchQ = !q || p.titulo.toLowerCase().includes(q) || (p.descripcion||'').toLowerCase().includes(q) || (p.genero||'').toLowerCase().includes(q);
+    return matchG && matchQ;
+  });
+
+  document.getElementById('count').textContent = `${lista.length} título${lista.length !== 1 ? 's' : ''}`;
+
+  if (!lista.length) {
+    document.getElementById('grid').innerHTML = `
+      <div class="empty">
+        <p>Sin resultados</p>
+        <span>Intenta con otro término o género</span>
+      </div>`;
+    return;
+  }
+
+  document.getElementById('grid').innerHTML = lista.map((p, i) => `
+    <div class="card" onclick="openModal(${PELICULAS.indexOf(p)})" style="animation-delay:${i*0.04}s">
+      <div class="poster-wrap">
+        ${p.poster
+          ? `<img src="${p.poster}" alt="${p.titulo}" loading="lazy" onerror="this.parentNode.innerHTML='<div class=poster-placeholder>🎬</div>'">`
+          : `<div class="poster-placeholder">🎬</div>`}
+        <div class="card-overlay">
+          <div class="play-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#0a0a0a"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${p.titulo}</div>
+        <div class="card-meta">${p.anio || ''}${p.duracion ? ' · ' + p.duracion + ' min' : ''}</div>
+        ${p.genero ? `<span class="card-genre">${p.genero}</span>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function openModal(idx) {
+  const p = PELICULAS[idx];
+  document.getElementById('m-title').textContent = p.titulo;
+  document.getElementById('m-sub').textContent = [p.anio, p.genero, p.duracion ? p.duracion + ' min' : ''].filter(Boolean).join(' · ');
+  document.getElementById('m-desc').textContent = p.descripcion || '';
+
+  const player = document.getElementById('player');
+  if (p.video) {
+    player.innerHTML = `<iframe src="${p.video}" allowfullscreen allow="autoplay"></iframe>`;
+  } else {
+    player.innerHTML = `<div class="no-video"><span style="font-size:2rem">🎬</span><span>Video no disponible</span></div>`;
+  }
+
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  document.getElementById('player').innerHTML = '';
+  document.body.style.overflow = '';
+}
+
+function handleModalClick(e) {
+  if (e.target === document.getElementById('modal')) closeModal();
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+init();
+</script>
+</body>
+</html>

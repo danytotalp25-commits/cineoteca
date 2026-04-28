@@ -1,0 +1,47 @@
+[
+  {
+    "titulo": "Nosferatu",
+    "anio": 1922,
+    "genero": "Terror",
+    "descripcion": "Clásico del cine expresionista alemán. Una de las primeras adaptaciones de Drácula de Bram Stoker.",
+    "poster": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Nosferatu_1922.jpg/400px-Nosferatu_1922.jpg",
+    "video": "https://archive.org/embed/Nosferatu_1922",
+    "duracion": 94
+  },
+  {
+    "titulo": "El gabinete del Dr. Caligari",
+    "anio": 1920,
+    "genero": "Terror",
+    "descripcion": "Pionera del cine expresionista con escenografías distorsionadas y una historia de locura y crimen.",
+    "poster": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/The_Cabinet_of_Dr._Caligari_poster.jpg/400px-The_Cabinet_of_Dr._Caligari_poster.jpg",
+    "video": "https://archive.org/embed/TheCabinetOfDr.Caligari",
+    "duracion": 67
+  },
+  {
+    "titulo": "El acorazado Potemkin",
+    "anio": 1925,
+    "genero": "Drama",
+    "descripcion": "Obra maestra del director Eisenstein, considerada una de las mejores películas de la historia del cine.",
+    "poster": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Battleship-Potemkin-1925.jpg/400px-Battleship-Potemkin-1925.jpg",
+    "video": "https://archive.org/embed/BattleshipPotemkin",
+    "duracion": 75
+  },
+  {
+    "titulo": "Viaje a la Luna",
+    "anio": 1902,
+    "genero": "Ciencia ficción",
+    "descripcion": "El icónico cortometraje de Georges Méliès, pionero de los efectos especiales y la fantasía cinematográfica.",
+    "poster": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Le_Voyage_dans_la_lune.jpg/400px-Le_Voyage_dans_la_lune.jpg",
+    "video": "https://archive.org/embed/LeVoyageDansLaLune",
+    "duracion": 14
+  },
+  {
+    "titulo": "El nacimiento de una nación",
+    "anio": 1915,
+    "genero": "Drama",
+    "descripcion": "Película épica de D.W. Griffith que revolucionó el lenguaje cinematográfico con su montaje y narrativa visual.",
+    "poster": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/The_Birth_of_a_Nation_poster.jpg/400px-The_Birth_of_a_Nation_poster.jpg",
+    "video": "https://archive.org/embed/BirthOfANation1915",
+    "duracion": 195
+  }
+]
